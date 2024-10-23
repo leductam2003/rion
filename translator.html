@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$RION BINARY TRANSLATOR</title>
+    <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="./src/line-awesome.min.css">
+    <link rel="stylesheet" href="./src/index.css" media="all">
+    <link rel="stylesheet" href="./src/freezeframe_styles.min.css">
+    <style>
+        #translator {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #5C5852;
+            padding: 1em;
+        }
+        #chatInput {
+            width: 100%;
+            padding: 0.5em;
+        }
+        #sendButton {
+            width: 60px;
+        }
+        .ff-container {
+            display: inline-flex;
+        }
+    </style>
+</head>
+<body>
+    <section id="mainwindow">
+        <h1 class="winheader">
+            <i class="las la-info-circle" style="font-size: 1.4em;"></i> Translator
+        </h1>
+            <div id="translator">
+            </div>
+            <div style="display: flex; align-items: center; margin-top: 1em;">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button id="sendButton">Send</button>
+            </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function textToBinary(text) {
+                return text.split('').map(char => char.charCodeAt(0).toString(2)).join(' ');
+            }
+
+            function binaryToText(binary) {
+                return binary.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
+            }
+
+            const sendButton = document.getElementById('sendButton');
+            const chatInput = document.getElementById('chatInput');
+            const translator = document.getElementById('translator');
+
+            function sendMessage() {
+                const input = chatInput.value;
+                let output;
+
+                if (/^[01\s]+$/.test(input)) {
+                    output = binaryToText(input.trim());
+                } else {
+                    output = textToBinary(input);
+                }
+
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `> ${output}`; 
+                messageDiv.style.cursor = 'pointer'; 
+                messageDiv.onclick = function() {
+                    navigator.clipboard.writeText(output); 
+                };
+                translator.appendChild(messageDiv);
+                chatInput.value = '';
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', function (event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
